@@ -41,9 +41,8 @@ def _clear_proxy_env() -> None:
 
 
 def _configure_worker_threads() -> None:
-    settings = get_settings()
-    opencv_threads = max(1, settings.tencent_ocr_opencv_threads)
-    onnx_threads = max(1, settings.tencent_ocr_onnx_threads)
+    opencv_threads = max(1, int(os.environ.get("GLM_BUYER_OPENCV_THREADS", "1")))
+    onnx_threads = max(1, int(os.environ.get("GLM_BUYER_ONNX_THREADS", "1")))
     os.environ.setdefault("OMP_NUM_THREADS", str(onnx_threads))
     os.environ.setdefault("OPENBLAS_NUM_THREADS", str(onnx_threads))
     os.environ.setdefault("MKL_NUM_THREADS", str(onnx_threads))
@@ -67,7 +66,9 @@ def _ignore_worker_sigint() -> None:
         signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 
-def _worker_initializer() -> None:
+def _worker_initializer(opencv_threads: int, onnx_threads: int) -> None:
+    os.environ["GLM_BUYER_OPENCV_THREADS"] = str(opencv_threads)
+    os.environ["GLM_BUYER_ONNX_THREADS"] = str(onnx_threads)
     _ignore_worker_sigint()
     _configure_worker_threads()
     _clear_proxy_env()
@@ -337,6 +338,14 @@ class OcrService:
                 return
             started_at = time.perf_counter()
             _clear_proxy_env()
+            os.environ.setdefault(
+                "GLM_BUYER_OPENCV_THREADS",
+                str(max(1, self.settings.tencent_ocr_opencv_threads)),
+            )
+            os.environ.setdefault(
+                "GLM_BUYER_ONNX_THREADS",
+                str(max(1, self.settings.tencent_ocr_onnx_threads)),
+            )
             try:
                 _load_adapter_module().get_engine()
             except Exception as exc:
@@ -362,6 +371,10 @@ class OcrService:
                 max_workers=max(1, self.settings.tencent_ocr_workers),
                 mp_context=mp_context,
                 initializer=_worker_initializer,
+                initargs=(
+                    max(1, self.settings.tencent_ocr_opencv_threads),
+                    max(1, self.settings.tencent_ocr_onnx_threads),
+                ),
             )
             return self._executor
 

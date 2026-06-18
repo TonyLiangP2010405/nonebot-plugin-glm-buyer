@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import Any
 
 import cv2
@@ -36,10 +37,13 @@ def get_engine():
     if RapidOCR is None:
         raise RuntimeError("缺少 rapidocr 依赖，无法使用 catpcha_v2 识别算法。")
 
-    from nonebot_plugin_glm_buyer.core.config import get_settings
+    onnx_threads_env = os.environ.get("GLM_BUYER_ONNX_THREADS")
+    if onnx_threads_env:
+        onnx_threads = max(1, int(onnx_threads_env))
+    else:
+        from nonebot_plugin_glm_buyer.core.config import get_settings
 
-    settings = get_settings()
-    onnx_threads = max(1, settings.tencent_ocr_onnx_threads)
+        onnx_threads = max(1, get_settings().tencent_ocr_onnx_threads)
 
     _engine = RapidOCR(
         params={
