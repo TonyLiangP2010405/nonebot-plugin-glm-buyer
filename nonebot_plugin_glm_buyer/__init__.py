@@ -25,7 +25,8 @@ __plugin_meta__ = PluginMetadata(
 # Windows uses spawn for multiprocessing. Child processes re-import the main
 # module before NoneBot has been initialized, so all require() calls and
 # driver-dependent setup must be guarded to the main process only.
-if multiprocessing.parent_process() is None:
+_IS_MAIN_PROCESS = multiprocessing.current_process().name == "MainProcess"
+if _IS_MAIN_PROCESS:
     from pathlib import Path
 
     from nonebot import get_driver, get_plugin_config, require
