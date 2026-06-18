@@ -1,0 +1,91 @@
+[project]
+name = "nonebot-plugin-glm-buyer"
+version = "0.1.0"
+description = "通过 NoneBot2 私聊控制 GLM Coding 账号抢购与支付二维码"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10,<4.0"
+authors = [
+    {name = "TonyLiangP2010405", email = "tonyliangp2010405@example.com"},
+]
+keywords = ["nonebot", "nonebot2", "plugin", "glm", "bigmodel"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "nonebot2>=2.2.0",
+    "nonebot-adapter-onebot>=2.4.0",
+    "nonebot-plugin-localstore>=0.7.0",
+    "nonebot-plugin-apscheduler>=0.5.0",
+    "pydantic>=2.10,<3.0",
+    "httpx>=0.28,<1.0",
+    "curl-cffi>=0.15.0,<1.0",
+    "qrcode[pil]>=8.0,<9.0",
+    "numpy>=2.1,<3.0",
+    "opencv-python>=4.10,<5.0",
+    "rapidocr>=3.8,<4.0",
+    "onnxruntime>=1.20,<2.0",
+    "PyYAML>=6.0,<7.0",
+    "python-dotenv>=1.0,<2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "nonebug>=0.3.0",
+    "ruff>=0.6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/TonyLiangP2010405/nonebot-plugin-glm-buyer"
+Repository = "https://github.com/TonyLiangP2010405/nonebot-plugin-glm-buyer"
+
+[project.entry-points.nb_plugins]
+nonebot_plugin_glm_buyer = "nonebot_plugin_glm_buyer:__plugin_meta__"
+
+[tool.nonebot]
+plugins = ["nonebot_plugin_glm_buyer"]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["nonebot_plugin_glm_buyer*"]
+
+[tool.setuptools.package-data]
+nonebot_plugin_glm_buyer = ["proxy_pool.yaml"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]
+ignore = ["E501"]
+per-file-ignores = { "nonebot_plugin_glm_buyer/__init__.py" = ["E402"] }
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.1.0,<10.0.0)",
+    "nonebug (>=0.4.4,<0.5.0)",
+    "ruff (>=0.15.17,<0.16.0)",
+    "fastapi (>=0.137.1,<0.138.0)",
+    "uvicorn (>=0.49.0,<0.50.0)",
+    "pytest-asyncio (>=1.4.0,<2.0.0)"
+]
